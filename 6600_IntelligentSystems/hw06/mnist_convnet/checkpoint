@@ -1,0 +1,2 @@
+model_checkpoint_path: "/mnt/c/Users/rtden/Documents/UBU/6600_IntelligentSystems/hw06/mnist_convnet/hw06_my_net_01.tfl"
+all_model_checkpoint_paths: "/mnt/c/Users/rtden/Documents/UBU/6600_IntelligentSystems/hw06/mnist_convnet/hw06_my_net_01.tfl"

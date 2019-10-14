@@ -1,0 +1,17 @@
+import random
+
+class Card():
+	def __init__(self, s, v):
+		self.suit = s
+		self.value = v
+
+	def show(self):
+		print
+
+#def makeDeck:
+
+c = Card('Diamond', 10)
+
+for x in range(10):
+	count = 0 + x
+	print (chr(count))

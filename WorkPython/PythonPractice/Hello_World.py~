@@ -1,0 +1,31 @@
+import random
+
+print('\n\nCan you add?')
+usr = 9
+right = 0
+count = 0
+while True:
+	print '    Please choose something to practice:\n'
+	      '    1:  Addition\n'
+	      '    2:  Subtraction\n'
+	      '    3:  Multiply\n'
+	      '    4:  Division\n'
+while usr != 0:
+	fir = random.randint(1,101)
+	sec = random.randint(1,101)
+	summ = fir + sec
+	
+	print '\n  ', fir, '\n','+ ', sec, '\n','------'
+	usr = input('> ')
+
+	if(usr == 0):
+		continue
+	elif(usr == summ):
+		print('\nWell done comrade!!')
+		right += 1
+	else:
+		print('\nCome on. Its simple addition.')
+	count += 1
+
+print '\n\nYou got ', right, ' right out of ', count
+print('Thanks for playing!!\n---------------------\n\n')

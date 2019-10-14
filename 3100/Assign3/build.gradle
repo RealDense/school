@@ -1,0 +1,28 @@
+plugins {
+	id 'java'
+	id 'application'
+}
+
+sourceSets {
+	main {
+		java {
+			srcDirs = ['src']
+		}
+	}
+}
+
+jar {
+	manifest {
+		attributes 'Main-Class': 'Assign3'
+	}
+}
+
+run {
+	if (project.hasProperty('runArgs')) {
+		args project.getProperty('runArgs').split()
+	}
+
+	standardInput = System.in
+}
+
+mainClassName = 'Assign3'
