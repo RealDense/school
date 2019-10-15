@@ -110,8 +110,8 @@ class Model:
         self._q_s_a = tf.placeholder(shape=[None, self._num_actions],
                                      dtype=tf.float32)
         # create two fully connected hidden layers
-        self._fc1 = tf.layers.dense(self._states, 50, activation=tf.nn.tanh)
-        self._fc2 = tf.layers.dense(self._fc1, 50, activation=tf.nn.tanh)
+        self._fc1 = tf.layers.dense(self._states, 100, activation=tf.nn.tanh)
+        self._fc2 = tf.layers.dense(self._fc1, 100, activation=tf.nn.tanh)
         self._logits = tf.layers.dense(self._fc2, self._num_actions)
         loss = tf.losses.mean_squared_error(self._q_s_a, self._logits)
         self._optimizer = tf.train.AdamOptimizer().minimize(loss)
