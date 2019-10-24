@@ -18,6 +18,7 @@ class Model:
         self._fc1 = None
         self._fc2 = None
         self._fc3 = None
+        self._fc4 = None
         # now setup the model
         self._define_model()
         
@@ -43,15 +44,79 @@ class Model:
 
     def _define_model_2(self):
         ## your code here.
+        self._states = tf.placeholder(shape=[None, self._num_states], dtype=tf.float32)
+        ## This is the Q(s, a) table.
+        ## The number of columns is determined by the input fed to it
+        ## The number of actions is 3. So, the size of _q_s_a is ? x 3,
+        ## because there are 3 actions in the game.
+        self._q_s_a = tf.placeholder(shape=[None, self._num_actions], dtype=tf.float32)
+        # create two fully connected hidden layers
+        self._fc1 = tf.layers.dense(self._states, 10, activation=tf.nn.relu)
+        self._fc2 = tf.layers.dense(self._fc1, 10, activation=tf.nn.relu)
+        self._logits = tf.layers.dense(self._fc2, self._num_actions)
+        loss = tf.losses.mean_squared_error(self._q_s_a, self._logits)
+        self._optimizer = tf.train.AdamOptimizer().minimize(loss)
+        self._var_init = tf.global_variables_initializer()
+        pass
 
     def _define_model_3(self):
         ## your code here.
+        self._states = tf.placeholder(shape=[None, self._num_states],
+                                      dtype=tf.float32)
+        ## This is the Q(s, a) table.
+        ## The number of columns is determined by the input fed to it
+        ## The number of actions is 3. So, the size of _q_s_a is ? x 3,
+        ## because there are 3 actions in the game.
+        self._q_s_a = tf.placeholder(shape=[None, self._num_actions],
+                                     dtype=tf.float32)
+        # create two fully connected hidden layers
+        self._fc1 = tf.layers.dense(self._states, 100, activation=tf.nn.relu)
+        self._fc2 = tf.layers.dense(self._fc1, 100, activation=tf.nn.relu)
+        self._logits = tf.layers.dense(self._fc2, self._num_actions)
+        loss = tf.losses.mean_squared_error(self._q_s_a, self._logits)
+        self._optimizer = tf.train.AdamOptimizer().minimize(loss)
+        self._var_init = tf.global_variables_initializer()
+        pass
 
     def _define_model_4(self):
         ## your code here.
+        self._states = tf.placeholder(shape=[None, self._num_states],
+                                      dtype=tf.float32)
+        ## This is the Q(s, a) table.
+        ## The number of columns is determined by the input fed to it
+        ## The number of actions is 3. So, the size of _q_s_a is ? x 3,
+        ## because there are 3 actions in the game.
+        self._q_s_a = tf.placeholder(shape=[None, self._num_actions],
+                                     dtype=tf.float32)
+        # create two fully connected hidden layers
+        self._fc1 = tf.layers.dense(self._states, 50, activation=tf.nn.relu)
+        self._fc2 = tf.layers.dense(self._fc1, 50, activation=tf.nn.relu)
+        self._fc3 = tf.layers.dense(self._fc2, 50, activation=tf.nn.relu)
+        self._fc4 = tf.layers.dense(self._fc3, 50, activation=tf.nn.relu)
+        self._logits = tf.layers.dense(self._fc4, self._num_actions)
+        loss = tf.losses.mean_squared_error(self._q_s_a, self._logits)
+        self._optimizer = tf.train.AdamOptimizer().minimize(loss)
+        self._var_init = tf.global_variables_initializer()
+        pass
 
     def _define_model_5(self):
         ## your code here.
+        self._states = tf.placeholder(shape=[None, self._num_states],
+                                      dtype=tf.float32)
+        ## This is the Q(s, a) table.
+        ## The number of columns is determined by the input fed to it
+        ## The number of actions is 3. So, the size of _q_s_a is ? x 3,
+        ## because there are 3 actions in the game.
+        self._q_s_a = tf.placeholder(shape=[None, self._num_actions],
+                                     dtype=tf.float32)
+        # create two fully connected hidden layers
+        self._fc1 = tf.layers.dense(self._states, 100, activation=tf.nn.tanh)
+        self._fc2 = tf.layers.dense(self._fc1, 100, activation=tf.nn.tanh)
+        self._logits = tf.layers.dense(self._fc2, self._num_actions)
+        loss = tf.losses.mean_squared_error(self._q_s_a, self._logits)
+        self._optimizer = tf.train.AdamOptimizer().minimize(loss)
+        self._var_init = tf.global_variables_initializer()
+        pass
     
     # take a state and a session and use the network to predict
     # the next state. state is a vector of 2 floats, e.g., [-0.61506952 -0.00476815].

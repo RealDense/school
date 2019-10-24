@@ -228,7 +228,7 @@ def train_mcar():
         sess.run(model.var_init)
         mc = MCar(sess, model, env, mem, MAX_EPSILON, MIN_EPSILON, LAMBDA)
         # change the number of episodes as needed
-        num_episodes = 10
+        num_episodes = 300
         cnt = 0
         while cnt < num_episodes:
             if cnt % 10 == 0:

@@ -1,0 +1,22 @@
+-- Query 1 - Yankee Managers
+-- List the name of everyone who has managed the New York Yankees
+select distinct namefirst, namelast, name
+from
+	(select distinct namefirst, namelast, teamid
+	from master, managers
+	where master.masterid = managers.masterid) as m, teams
+-- 	(select teamid, name
+-- 	 from teams
+-- 	 where teams.name = 'New York Yankees') as t
+where m.teamid = teams.teamid and teams.name = 'New York Yankees'
+
+-- Query 2 - Yankee Batters 
+-- For each year, list how many different players batted for the New York Yankees
+select count(*), y.yearid
+from batting,
+	(select distinct teamid, name, yearid
+	from teams
+	where teams.name = 'New York Yankees') as y
+where batting.yearid = y.yearid and batting.teamid = y.teamid
+group by y.yearid
+order by y.yearid
