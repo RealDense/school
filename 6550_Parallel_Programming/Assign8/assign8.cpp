@@ -14,85 +14,99 @@ struct miniMap
   int mapRow[WORLDSIZE];
 };
 
-bool valid_pos(int pos)
+bool valid_pos(int pos, int maxSize)
 {
-  return pos >= 0 && pos < WORLDSIZE;
+  return pos >= 0 && pos < maxSize;
 }
 
-bool valid_pos(int row, int col) { return valid_pos(row) && valid_pos(col); }
-
-int oneDay(miniMap c, int batch)
+bool valid_pos(int row, int col, int batch)
 {
-  int nextMap[batch][WORLDSIZE];
+  return valid_pos(row, batch + 2) && valid_pos(col, WORLDSIZE);
+}
 
-  for (int i = c.x; i < c.x * batch; i++)
+void oneDay(int **mm, int batch)
+{
+  int nextMap[batch + 2][WORLDSIZE];
+
+  for (int i = 1; i <= batch; i++)
   {
-    for (int j = c.y; j < c.y * batch; j++)
+    for (int j = 0; j < WORLDSIZE; j++)
     {
-      if (!valid_pos(i, j))
+      if (!valid_pos(i, j, batch))
         continue;
       int k = 0;
-      if (valid_pos(i - 1, j - 1))
-        k += c.mapPart[i - 1][j - 1];
-      if (valid_pos(i - 1, j))
-        k += c.mapPart[i - 1][j];
-      if (valid_pos(i - 1, j + 1))
-        k += c.mapPart[i - 1][j + 1];
-      if (valid_pos(i, j - 1))
-        k += c.mapPart[i][j - 1];
-      if (valid_pos(i, j + 1))
-        k += c.mapPart[i][j + 1];
-      if (valid_pos(i + 1, j - 1))
-        k += c.mapPart[i + 1][j - 1];
-      if (valid_pos(i + 1, j))
-        k += c.mapPart[i + 1][j];
-      if (valid_pos(i + 1, j + 1))
-        k += c.mapPart[i + 1][j + 1];
+      if (valid_pos(i - 1, j - 1, batch))
+        k += mm[i - 1][j - 1];
+      if (valid_pos(i - 1, j, batch))
+        k += mm[i - 1][j];
+      if (valid_pos(i - 1, j + 1, batch))
+        k += mm[i - 1][j + 1];
+      if (valid_pos(i, j - 1, batch))
+        k += mm[i][j - 1];
+      if (valid_pos(i, j + 1, batch))
+        k += mm[i][j + 1];
+      if (valid_pos(i + 1, j - 1, batch))
+        k += mm[i + 1][j - 1];
+      if (valid_pos(i + 1, j, batch))
+        k += mm[i + 1][j];
+      if (valid_pos(i + 1, j + 1, batch))
+        k += mm[i + 1][j + 1];
 
-      if (c.mapPart[i][j] == 1 && k < 2)
-        nextMap.mapPart[i][j] = 0;
-      else if (c.mapPart[i][j] == 1 && k > 3)
-        nextMap.mapPart[i][j] = 0;
-      else if (c.mapPart[i][j] == 0 && k == 3)
-        nextMap.mapPart[i][j] = 1;
+      if (mm[i][j] == 1 && k < 2)
+        nextMap[i][j] = 0;
+      else if (mm[i][j] == 1 && k > 3)
+        nextMap[i][j] = 0;
+      else if (mm[i][j] == 0 && k == 3)
+        nextMap[i][j] = 1;
       else
-        nextMap.mapPart[i][j] = c.mapPart[i][j];
+        nextMap[i][j] = mm[i][j];
     }
   }
-  nextMap.x = c.x;
-  nextMap.y = c.y;
-  return nextMap;
-}
 
-miniMap copy(miniMap c, miniMap t)
-{
-  t.x = c.x;
-  t.y = c.y;
-  return t;
-}
-
-miniMap combine(miniMap zero, miniMap other, int batch)
-{
-  for (int i = other.x; i < other.x * batch; i++)
+  for (int i = 1; i <= batch; i++)
   {
-    for (int j = other.y; j < other.y * batch; j++)
+    for (int j = 0; j < WORLDSIZE; j++)
     {
-      zero.mapPart[i][j] = other.mapPart[i][j];
+      mm[i][j] = nextMap[i][j];
     }
   }
-  return zero;
 }
 
-void showMap(miniMap zero, int day)
+void combine(int **bigMap, int **temp, int batch, int rank)
 {
-  cout << "\n\n\nDAY: " << day << endl;
+  for (int i = 0; i < batch; i++)
+  {
+    for (int j = 0; j < WORLDSIZE; j++)
+    {
+      bigMap[i + (batch * rank)][j] = temp[i + 1][j];
+    }
+  }
+  // return zero;
+}
+
+void showMap(int **bigMap, int day)
+{
+  cout << "\n\n\n------------------ DAY: " << day << "--------------------" << endl;
   for (int i = 0; i < WORLDSIZE; i++)
   {
     for (int j = 0; j < WORLDSIZE; j++)
     {
-      cout << (zero.mapPart[i][j] == 1 ? "X" : "-");
+      cout << (bigMap[i][j] == 1 ? "X" : "-");
     }
     cout << endl;
+  }
+}
+
+void copyRow(int mm[][], int row[], bool top, int batch)
+{
+  int r = batch + 1;
+  if (top)
+  {
+    r = 0;
+  }
+  for (int i = 0; i < WORLDSIZE; i++)
+  {
+    mm[r][i] = row[i];
   }
 }
 
@@ -114,14 +128,14 @@ int main(int argc, char **argv)
   batch = WORLDSIZE / size;
   cout << "here 7\n";
 
-  int mm[batch][WORLDSIZE];
+  int mm[batch + 2][WORLDSIZE];
 
-  for (int i = 0; i < batch; i++)
+  for (int i = 0; i < batch + 2; i++)
   {
     for (int j = 0; j < WORLDSIZE; j++)
     {
       mm[i][j] = 0;
-      if (rand() % 5 == 0)
+      if (rand() % 5 == 0 && 0 < i < batch + 1)
       {
         mm[i][j] = 1;
       }
@@ -130,57 +144,51 @@ int main(int argc, char **argv)
 
   for (int day = 0; day < days; day++)
   {
-    //send top row
     miniMap top, bottom;
-    top.mapRow = mm[0];
-    bottom.mapRow = mm[batch - 1];
+    copyRow(mm, top, true, batch);
+    copyRow(mm, bottom, false, batch);
 
+    //send top row
     if (rank - 1 >= 0)
     {
-
       MPI_Send(&top, sizeof(miniMap), MPI_BYTE, rank - 1, 0, MCW);
     }
     //send bottom row
-    //get top row
-    //get bottom row
-    if (rank == 0)
+    if (rank + 1 < size)
     {
-      //send out map
-      for (int i = 1; i < size; i++)
-      {
-        cout << "here 1\n";
-        MPI_Send(&myMap, sizeof(miniMap), MPI_BYTE, i, 0, MCW);
-        cout << "here 2\n";
-      }
+      MPI_Send(&bottom, sizeof(miniMap), MPI_BYTE, rank + 1, 0, MCW);
     }
-    else
+    //get top row
+    if (rank - 1 >= 0)
     {
-      //receive map
-      miniMap temp;
-      cout << "here 3\n";
-      MPI_Recv(&temp, sizeof(miniMap), MPI_BYTE, 0, 0, MCW, MPI_STATUS_IGNORE);
-      cout << "here 4\n";
-      myMap = copy(myMap, temp);
-      cout << "here 5\n";
+      MPI_Recv(&bottom, sizeof(miniMap), MPI_BYTE, rank - 1, 0, MCW);
+    }
+    //get bottom row
+    if (rank + 1 < size)
+    {
+      MPI_Recv(&top, sizeof(miniMap), MPI_BYTE, rank + 1, 0, MCW);
     }
 
+    copyRow(mm, top, true, batch);
+    copyRow(mm, bottom, false, batch);
+
     // One day
-    myMap = oneDay(myMap, batch);
+    oneDay(mm, batch);
+
+    MPI_Send(&mm, sizeof(mm), MPI_BYTE, 0, 0, MCW);
 
     // receive maps
     if (rank == 0)
     {
-      miniMap temp;
-      for (int i = 1; i < size; i++)
+      int bigMap[WORLDSIZE][WORLDSIZE];
+      // miniMap temp;
+      int temp[batch + 2][WORLDSIZE];
+      for (int i = 0; i < size; i++)
       {
-        MPI_Send(&temp, sizeof(miniMap), MPI_BYTE, i, 0, MCW);
-        myMap = combine(myMap, temp, batch);
+        MPI_Send(&temp, sizeof(mm), MPI_BYTE, i, 0, MCW);
+        bigMap = combine(bigMap, temp, batch, i);
       }
-      showMap(myMap, day);
-    }
-    else
-    {
-      MPI_Send(&myMap, sizeof(miniMap), MPI_BYTE, 0, 0, MCW);
+      showMap(bigMap, day);
     }
 
     // display maps
@@ -212,3 +220,13 @@ int main(int argc, char **argv)
 //                     }
 //                 }
 //             }
+
+void doSomething(std::vector<int> some)
+{
+}
+
+int main()
+{
+  std::vector<int> josh;
+  doSomething(josh);
+}
